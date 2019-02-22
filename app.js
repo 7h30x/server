@@ -1,6 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const graphQL = require('graphql')
+const graphQLHTTP = require('express-graphql')
 const express = require('express')
 const Router = require('./mongoose/routes')
 const bodyParser = require('body-parser')
@@ -19,8 +19,18 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 
 // graphQL client
+const schema = require('./graphql/schema')
+const root = require('./graphql/root')
+
+app.use('/graphql', graphQLHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true
+  })
+)
+
 
 //Routes
-app.use('/api', Router)
+// app.use('/api', Router)
 
-app.listen(PORT, )
+app.listen(PORT, () => console.log('graphql server is listening on port:' + PORT) )

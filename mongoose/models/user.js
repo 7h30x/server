@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema({
   },
   timbangans: {
     type: [ Number ],
-    default: []  }
+    default: []
+  }
 })
 //HASH USER PASSWORD ON CREATE NEW USER
 userSchema.pre('save', function (next) {

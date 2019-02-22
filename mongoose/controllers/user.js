@@ -39,14 +39,13 @@ module.exports = class User {
       if (user !== null) throw 'email is already registered.'
       else {
         let newUser = await userModel.create(userInput)
-        console.log("newUser")
         delete newUser.password
         let token = newUser.createToken(newUser)
         res.status(200).json({
           message: 'successfully registered new user.',
           token
         })  
-        }
+      }
     } catch (err) {
       // console.log(err)
       res.status(400).json({
@@ -54,6 +53,24 @@ module.exports = class User {
       })
     }
   }
+  static async getData(req, res) {
+    try {
+      let result = await userModel.findOne({ email: req.decoded.email })
+      let userObj = result.toObject()
+      delete userObj.password
+      let token = newUser.createToken(user)
+      res.status(200).json({
+        message: 'successfully registered new user.',
+        token,
+        data: JSON.stringify(userObj)
+      })
+    } catch (err) {
+      // console.log(err)
+      res.status(400).json({
+        error: 'could not get user data'
+      })
+    }
+  } 
   static async addTimbangan(req, res) {
     console.log('z')
     try {
@@ -105,7 +122,6 @@ module.exports = class User {
   }
   static async addData (req, res) {
     try {
-      console.log('xxx')
       let data = { value: Number(req.body.data).toFixed(2), createdAt: new Date(Date.now()) }
       let userObj = await userModel.findOneAndUpdate({
         _id: req.decoded._id
