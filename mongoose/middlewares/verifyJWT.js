@@ -8,6 +8,7 @@ function verifyJWT(req, res, next) {
     })
   } else {
     jwt.verify(req.headers.authorization, process.env.JWT_SECRET, function (error, decoded) {
+      // console.log('decode', decoded)
       if (error) {
         res.status(400).json({
           error: 'json web token is not valid.'

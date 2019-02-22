@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET=process.env.JWT_SECRET
 var emailRegex = new RegExp("^.+@[^\.].*\.[a-z]{2,}$");
-
 const dataSchema = new mongoose.Schema({
-  value: Number
+  value: Number,
+  createdAt: Date
 })
 const userSchema = new mongoose.Schema({
   name: String,
@@ -34,14 +34,12 @@ const userSchema = new mongoose.Schema({
   height: Number,
   data: {
     type: [dataSchema],
-    default: [],
+    default: []
   },
   timbangans: {
-    type: [Number],
-    default:[]
-  }
+    type: [ Number ],
+    default: []  }
 })
-
 //HASH USER PASSWORD ON CREATE NEW USER
 userSchema.pre('save', function (next) {
   let self = this;
@@ -56,7 +54,16 @@ userSchema.pre('save', function (next) {
     });
   });
 })
-
+userSchema.post('findOneAndUpdate', function (doc) {
+  var isUnique = (val, index, self) => {
+    return self.indexOf(val) === index 
+  }
+  let timbangans = doc.timbangans
+  let uniqueIds = timbangans.filter(isUnique)
+  doc.timbangans = uniqueIds
+  doc.save()
+})
+userSchema.post
 //CHECK USER PASSWORD ON SIGN IN 
 userSchema.methods.checkPassword = async function (candidatePwd, userData) {
   let same = await bcrypt.compare(candidatePwd, this.password)

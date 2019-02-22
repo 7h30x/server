@@ -54,16 +54,16 @@ module.exports = class User {
       })
     }
   }
-  static async addTimbangans (req, res) {
+  static async addTimbangan(req, res) {
+    console.log('z')
     try {
       let id = Number(req.params.id)
       let userObj = await userModel.findOneAndUpdate({
         _id: req.decoded._id
       }, {
           $push: { timbangans: id }
-        }, {
-          new: true
-        })
+       }
+      )
       let payload = userObj.toObject()
       delete payload.password
       res.status(200).json({
@@ -78,7 +78,7 @@ module.exports = class User {
     }
   }
 
-  static async deleteTimbangans (req, res) {
+  static async removeTimbangan (req, res) {
     try {
       let id = Number(req.params.id)
       let userObj = await userModel.findOneAndUpdate({
@@ -105,57 +105,8 @@ module.exports = class User {
   }
   static async addData (req, res) {
     try {
-      let data = { value: Number(req.body.data).toFixed(2) }
-      let userObj = await userModel.findOneAndUpdate({
-        _id: req.decoded._id
-      }, {
-        $push: { data: data }
-      }, {
-          new: true
-        })
-      let payload = userObj.toObject()
-      delete payload.password
-      res.status(200).json({
-        message: 'updated user weight data.',
-        data: payload
-      })
-    } catch (err) {
-      console.log('error: ',err)
-      res.status(400).json({
-        error: 'error updating data'
-      })
-    }
-  }
-
-  static async deleteData(req, res) {
-    try {
-      let id = req.params.id 
-      let userObj = await userModel.findOneAndUpdate({
-        _id: req.decoded._id
-      }, {
-        $pull: {
-          data: { _id: id }
-        }
-      }, {
-          new: true
-        })
-      let payload = userObj.toObject()
-      delete payload.password
-      res.status(200).json({
-        message: 'Successfully deleted user weight data with id:' + id,
-        data: payload
-      })
-    } catch (err) {
-      console.log('error: ', err)
-      res.status(400).json({
-        error: 'error updating data'
-      })
-    }
-  }
-  
-  static async addData (req, res) {
-    try {
-      let data = { value: Number(req.body.data).toFixed(2) }
+      console.log('xxx')
+      let data = { value: Number(req.body.data).toFixed(2), createdAt: new Date(Date.now()) }
       let userObj = await userModel.findOneAndUpdate({
         _id: req.decoded._id
       }, {
