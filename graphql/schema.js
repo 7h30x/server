@@ -1,5 +1,4 @@
-const { buildSchema } = require('graphql')
-const schema= buildSchema(`
+const schema= `
 input RegInput {
   email: String!,
   password: String!,
@@ -30,9 +29,9 @@ type MessageObj {
 type Query {
   hello: String,
   getData(token: String!): DataObj
+  signIn(email: String! , password: String! ): UserObj,
 }
 type Mutation {
-    signIn(email: String! , password: String! ): UserObj,
     register (input: RegInput!): UserObj,
 
     addData ( weight : Int!, token: String! ) : MessageObj,
@@ -42,6 +41,6 @@ type Mutation {
     addTimb ( input: timbanganInput! ) : MessageObj,
     removeTimb ( input: timbanganInput! ): MessageObj
   }
-`)
+`
 
 module.exports = schema

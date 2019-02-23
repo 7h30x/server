@@ -2,13 +2,17 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET=process.env.JWT_SECRET
-var emailRegex = new RegExp("^.+@[^\.].*\.[a-z]{2,}$");
+var emailRegex = new RegExp("^.+@[^\.].*\.[a-z]{2,}$")
+
 const dataSchema = new mongoose.Schema({
   value: Number,
   createdAt: Date
 })
+
 const userSchema = new mongoose.Schema({
   name: String,
+  age: Number,
+  height: Number,
   email: {
     type: String,
     required: true,
@@ -30,8 +34,6 @@ const userSchema = new mongoose.Schema({
       }
     }
   },
-  age: Number,
-  height: Number,
   data: {
     type: [dataSchema],
     default: []
@@ -41,20 +43,23 @@ const userSchema = new mongoose.Schema({
     default: []
   }
 })
+
 //HASH USER PASSWORD ON CREATE NEW USER
 userSchema.pre('save', function (next) {
-  let self = this;
-  if (!this.isModified('password')) return next();
+  let self = this
+  if (!this.isModified('password')) return next()
   bcrypt.genSalt(12, function (err, salt) {
-    if (err) return next(err);
+    if (err) return next(err)
     // hash the password along with our new salt
     bcrypt.hash(self.password, salt, function (err, hash) {
-      if (err) return next(err);
-      self.password = hash;
-      next();
-    });
-  });
+      if (err) return next(err)
+      self.password = hash
+      next()
+    })
+  })
 })
+
+//DELETE NON UNIQUE TIMBANGAN IDs
 userSchema.post('findOneAndUpdate', function (doc) {
   var isUnique = (val, index, self) => {
     return self.indexOf(val) === index 
@@ -64,7 +69,7 @@ userSchema.post('findOneAndUpdate', function (doc) {
   doc.timbangans = uniqueIds
   doc.save()
 })
-userSchema.post
+
 //CHECK USER PASSWORD ON SIGN IN 
 userSchema.methods.checkPassword = async function (candidatePwd, userData) {
   let same = await bcrypt.compare(candidatePwd, this.password)
@@ -75,6 +80,8 @@ userSchema.methods.checkPassword = async function (candidatePwd, userData) {
     return token
   }
 }
+//create jwt token
 userSchema.methods.createToken = (data) => jwt.sign(data.toObject(), JWT_SECRET)
+
 const userModel = mongoose.model('User', userSchema)
 module.exports = userModel
