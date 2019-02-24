@@ -10,7 +10,7 @@ const mutations = require('./mutations')
 const queries = require('./queries')
 
 
-describe('/graphQL Schema endpoints return Objects with correct data types', async function () {
+describe('/graphQL Schema returns objects with correct data types', async function () {
  
   it('DATA OBJECT should have correct length and property data types', async function () {
     let { data: { getData : dataObj} } = await graphql(schema, queries.getData)

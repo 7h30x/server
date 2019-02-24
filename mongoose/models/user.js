@@ -1,18 +1,30 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { getFormattedDate } = require('../../helpers/date')
+
 const JWT_SECRET=process.env.JWT_SECRET
 var emailRegex = new RegExp("^.+@[^\.].*\.[a-z]{2,}$")
-
 const dataSchema = new mongoose.Schema({
   value: Number,
-  createdAt: Date
+  createdAt: String
 })
 
 const userSchema = new mongoose.Schema({
   name: String,
   age: Number,
   height: Number,
+  target: {
+    weight: Number,
+    date: {
+      type: String,
+      validate: {
+        validator: val => {
+          return new Date(val) > new Date(getFormattedDate(6)) 
+        }
+      }
+    }
+  },
   email: {
     type: String,
     required: true,

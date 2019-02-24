@@ -1,6 +1,6 @@
 const userModel = require('../models/user')
 const jwt = require('jsonwebtoken')
-
+const {getFormattedDate} = require('../../helpers/date')
 module.exports = class User {
   static verifyJWT(token) {
     return jwt.verify(token, process.env.JWT_SECRET, function (error, decoded) {
@@ -62,12 +62,62 @@ module.exports = class User {
       })
     }
   }
-  static async getData({ token }) {
-    console.log('hey',token)
+  static async editTarget(weight, daysFromToday, token) {
     let t = token
     try {
       let checkTokenResult = this.verifyJWT(t)
-      // console.log('xx',checkTokenResult)
+      if (checkTokenResult instanceof Error) throw checkTokenResult
+      let target = { weight: Number(weight), date: getFormattedDate(Number(daysFromToday)) }
+      let opts = { runValidators: true, context: 'query' , new: true};
+      let userObj = await userModel.findOneAndUpdate({
+        _id: checkTokenResult._id
+      },
+      {
+        $set: { target : target }
+      },
+      opts)
+      let payload = userObj.toObject().target
+      return ({
+        message: 'Successfully updated user targets.',
+        data: JSON.stringify(payload)
+      })
+    } catch (err) {
+      // console.log('in err')
+      return ({
+        error: 'error updating user targets.'
+      })
+    }
+  }
+  static async editHeight(height, token) {
+    try {
+      let t = token
+      let h = Number(height)
+      let checkTokenResult = this.verifyJWT(t)
+      if (checkTokenResult instanceof Error) throw checkTokenResult
+      let userObj = await userModel.findOneAndUpdate({
+        _id: checkTokenResult._id
+      },
+      {
+        $set: { height : h}
+      },
+      {
+        new: true
+        })
+      let payload = userObj.toObject()
+      delete payload.password
+      return ({
+        message: 'Successfully updated user height to: ' + height
+      })
+    } catch (err) {
+      return ({
+        error: 'error updating height.'
+      })
+    }
+  }
+  static async getData({ token }) {
+    let t = token
+    try {
+      let checkTokenResult = this.verifyJWT(t)
       if (checkTokenResult instanceof Error) throw checkTokenResult
       let result = await userModel.findOne({ email: checkTokenResult.email })
       let userObj = result.toObject()
@@ -126,7 +176,7 @@ module.exports = class User {
         message: 'Successfully removed Timbangan with Id: ' + id,
       })
     } catch (err) {
-      console.log('error: ', err)
+      // console.log('error: ', err)
       return ({
         error: String(err)
       })
@@ -137,7 +187,7 @@ module.exports = class User {
     try {
       let checkTokenResult = this.verifyJWT(t)
       if (checkTokenResult instanceof Error) throw checkTokenResult
-      let data = { value: Number(weight).toFixed(2), createdAt: new Date(Date.now()) }
+      let data = { value: Number(weight).toFixed(2), createdAt: getFormattedDate(0)  }
       let userObj = await userModel.findOneAndUpdate({
         _id: checkTokenResult._id
       },
