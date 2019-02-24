@@ -34,6 +34,9 @@ type Query {
 type Mutation {
     register (input: RegInput!): UserObj,
 
+    editTarget (weight: Int! , days: Int! , token: String!): DataObj,
+    editHeight (height: Int!, token: String!): DataObj,
+
     addData ( weight : Int!, token: String! ) : MessageObj,
     deleteData( dataId : String! , token: String! ) : MessageObj,
     clearData (token: String! ) : MessageObj,

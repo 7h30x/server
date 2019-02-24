@@ -20,7 +20,7 @@ module.exports = class User {
         }
       }
     } catch (err) {
-      console.log(err)
+      // console.log(err)
       res.status(400).json({
         error: err
       })
@@ -72,9 +72,8 @@ module.exports = class User {
     }
   } 
   static async addTimbangan(req, res) {
-    console.log('z')
     try {
-      let id = Number(req.params.id)
+      let id = Number (req.params.id)
       let userObj = await userModel.findOneAndUpdate({
         _id: req.decoded._id
       }, {
@@ -88,7 +87,7 @@ module.exports = class User {
         data: payload
       })
     } catch (err) {
-      console.log('error: ', err)
+      // console.log('error: ', err)
       res.status(400).json({
         error: 'error updating data'
       })

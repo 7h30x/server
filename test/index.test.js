@@ -90,7 +90,7 @@ describe('GET /graphQL', function () {
     
       after(clearDB)
   })
-  describe('GET DATA', function () {
+  context ('GET DATA', function () {
     var token;
     before(function (done) {
       User.create(registerInputSuccess.input)
@@ -120,17 +120,91 @@ describe('GET /graphQL', function () {
     after(clearDB)
 
   })
-  describe('CLEAR DATA', function () {
+  context('EDIT TARGET', function() {
+    var tokenObj
+    var weight = 70
+    var daysSuccess = 7
+    var daysFail = 6
+    before(function (done) {
+      User.create(registerInputSuccess.input)
+        .then(user => {
+          tokenObj = { token: jwt.sign(user.toObject(), process.env.JWT_SECRET) }
+          done()
+        })
+    })
+    it('should return object with success message and data object', async function () {
+      var resultObj = await resolvers.editTarget({
+        weight,
+        days: daysSuccess,
+        token: tokenObj.token
+      })  
+      expect(resultObj).to.be.an('Object')
+      expect(resultObj).to.have.property('message')
+      expect(resultObj.message).to.equal('Successfully updated user targets.')
+      expect(resultObj).to.have.property('data')
+      expect(JSON.parse(resultObj.data)).to.be.an('object')
+      expect(JSON.parse(resultObj.data)).to.have.property('weight')
+      expect(Object.keys(resultObj)).to.have.length(2)
+    })
+    it('should return error message on days < 7 days ( 1 week )', async function () {
+      var resultObj = await resolvers.editTarget({
+        weight,
+        days: daysFail,
+        token: tokenObj.token
+      })
+      expect(resultObj).to.be.an('Object')
+      expect(resultObj).to.have.property('error')
+      expect(resultObj.error).to.equal('error updating user targets.')
+      expect(Object.keys(resultObj)).to.have.length(1)
+    })
+    after(clearDB)
+  })
+  context ('EDIT HEIGHT', function () {
+    var tokenObj
+    var heightSuccess = 170
+    var heightFail = 'xxx'
+    before(function (done) {
+      User.create(registerInputSuccess.input)
+        .then(user => {
+          tokenObj = { token: jwt.sign(user.toObject(), process.env.JWT_SECRET) }
+          done()
+        })
+    })
+    it('should return object with success message and data object', async function () {
+      var resultObj = await resolvers.editHeight({
+        height: heightSuccess,
+        token: tokenObj.token
+      })
+      expect(resultObj).to.be.an('Object')
+      expect(resultObj).to.have.property('message')
+      expect(resultObj.message).to.equal('Successfully updated user height to: ' + heightSuccess)
+      expect(Object.keys(resultObj)).to.have.length(1)
+    })
+    it('should return error message on invalid height', async function () {
+      var resultObj = await resolvers.editHeight({
+        height: heightFail,
+        token: tokenObj.token
+      })
+      expect(resultObj).to.be.an('Object')
+      expect(resultObj).to.have.property('error')
+      expect(resultObj.error).to.equal('error updating height.')
+      expect(Object.keys(resultObj)).to.have.length(1)
+    })
+    after(clearDB)
+  })
+  context ('CLEAR DATA', function () {
     var tokenObj
     var weight = 60
+    
     before(function (done) {
       User.create(registerInputSuccess.input)
       .then(user => {
         tokenObj = { token: jwt.sign(user.toObject(), process.env.JWT_SECRET) }
         return resolvers.addData({ weight, token: tokenObj })
       })
-      .then(() =>done())
+      .then(() => done())
     })
+
     it('it should return object with success message', async function () {
       var resultObj = await resolvers.clearData( tokenObj )
       expect(resultObj).to.be.an('Object')
@@ -146,7 +220,7 @@ describe('GET /graphQL', function () {
     })
     after(clearDB)
   })
-  describe('DELETE DATA', function () {
+  context ('DELETE DATA', function () {
     var token
     var weight = 60
     var weightFalse = 'xxx'
@@ -182,7 +256,7 @@ describe('GET /graphQL', function () {
     })
     after(clearDB)
   })
-  describe('ADD DATA', function () {
+  context ('ADD DATA', function () {
     var token
     var weight = 60
     var weightFalse = 'xxx'
