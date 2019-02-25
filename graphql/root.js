@@ -1,6 +1,6 @@
 const userController = require('../mongoose/controllers/usergraphQL')
 module.exports = {
-  signIn: ({ email, password }) => userController.signIn(email, password),
+  login: ({email, password}) => userController.signIn(email, password),
   register: (input) => userController.register(input),
   
   editTarget: ({ weight, days, token }) => userController.editTarget(weight, days, token),

@@ -14,8 +14,8 @@ module.exports = class User {
   static async signIn(email, password) {
     try {
       const userInput = {
+        email,
         password,
-        email
       }
       let user = await userModel.findOne({ email: userInput.email })
       if (user === null) throw 'user not found'
