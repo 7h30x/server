@@ -5,7 +5,7 @@ const graphQLHTTP = require('express-graphql')
 const { buildSchema } = require('graphql')
 const mongoose = require('mongoose')
 const MONGO_URI = process.env.MONGO_URI
-console.log(process.env.MONGO_URI,"INI DATABASENYA!!!!")
+console.log(MONGO_URI,"INI DATABASENYA!!!!")
 mongoose.connect(MONGO_URI,{ useNewUrlParser: true })
 
 // graphQL client
