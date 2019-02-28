@@ -49,7 +49,6 @@ module.exports = class User {
       else {
         let newUser = await userModel.create(userInput)
         delete newUser.password
-        // console.log("newUser")
         let token = newUser.createToken(newUser)
         return ({
           message: 'Successfully registered new user.',

@@ -63,6 +63,7 @@ describe('GET /graphQL', function () {
     })
       it('should return object with success message, logged in user token', async function () {
         var resultObj = await resolvers.signIn(signInInputSuccess)
+        console.log('----->>', resultObj)
         expect(resultObj).to.be.an('Object')
         expect(resultObj).to.have.property('message')
         expect(resultObj.message).to.equal('Successfully signed in user.')
